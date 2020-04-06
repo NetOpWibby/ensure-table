@@ -1,8 +1,9 @@
 
 
 
-//  I M P O R T
+//  I M P O R T S
 
+import print from "@webb/console";
 import { r } from "rethinkdb-ts";
 
 //  U T I L
@@ -51,11 +52,19 @@ export default async(database: DatabaseInput) => {
 
   try {
     await ensureCheck();
-    console.log(`✨ Table "${name}", ready`);
+
+    console.log(
+      print.magentaLine(print.black(" RethinkDB ")) +
+      print.invert(`READY: ${print.bold(name)} table`)
+    );
   } catch(tableConnectionError) {
     await r.tableCreate(name).run(databaseConnection);
     await ensureCheck();
-    console.log(`⚡️ Created "${name}" table`);
+
+    console.log(
+      print.magentaLine(print.black(" RethinkDB ")) +
+      print.invert(`CREATED: ${print.bold(name)} table`)
+    );
   }
 
   finally {
@@ -64,14 +73,31 @@ export default async(database: DatabaseInput) => {
 
   async function ensureCheck() {
     if (index && Array.isArray(index)) {
-      const indexPromises: Array<Promise<any>> = [];
+      /// If index is supplied and is an Array...
+      try {
+        const indexPromises: Array<Promise<any>> = [];
 
-      index.map(indexItem => indexPromises.push(r.table(name).indexWait(indexItem)
-        .run(databaseConnection)));
-      await Promise.all(indexPromises);
+        index.map(indexItem => indexPromises.push(
+          r.table(name).indexWait(indexItem).run(databaseConnection))
+        );
+
+        await Promise.all(indexPromises);
+      } catch(indexMightNotExist) {
+        const indexPromises: Array<Promise<any>> = [];
+
+        index.map(indexItem => indexPromises.push(
+          r.table(name).indexCreate(String(indexItem)).run(databaseConnection))
+        );
+
+        await Promise.all(indexPromises);
+      }
     } else if (index) {
-      await r.table(name).indexWait(String(index))
-        .run(databaseConnection);
+      /// If a single index is supplied...
+      try {
+        await r.table(name).indexWait(String(index)).run(databaseConnection);
+      } catch(indexMightNotExist) {
+        await r.table(name).indexCreate(String(index)).run(databaseConnection);
+      }
     } else {
       await r.table(name).run(databaseConnection);
     }
