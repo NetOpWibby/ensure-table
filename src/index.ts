@@ -55,8 +55,8 @@ export default async(database: DatabaseInput) => {
 
     console.log(
       print.magentaLine(print.black(" rethinkdb ")) +
-      print.invert(" ready   — ") +
-      print.invert(print.bold("name")) +
+      print.invert(" ready — ") +
+      print.invert(print.bold(name)) +
       print.invert(" table ")
     );
   } catch(tableConnectionError) {
@@ -66,7 +66,7 @@ export default async(database: DatabaseInput) => {
     console.log(
       print.magentaLine(print.black(" rethinkdb ")) +
       print.invert(" created — ") +
-      print.invert(print.bold("name")) +
+      print.invert(print.bold(name)) +
       print.invert(" table ")
     );
   }

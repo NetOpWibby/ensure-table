@@ -43,7 +43,7 @@
     "test:assert": "ts-node test/index.ts"
   },
   "types": "dist/index.d.ts",
-  "version": "2020.04.06.1",
+  "version": "2020.04.06.2",
   "dependencies": {
     "@webb/console": "^2020.3.29"
   }
