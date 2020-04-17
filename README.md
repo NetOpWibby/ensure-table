@@ -69,7 +69,7 @@ Type: `object` (optional)
 
 Available options:
 
-```json
+```js
 // All values are defaults, aside from "db".
 // Internally, "db" will be the same value as "name" if not declared.
 {
