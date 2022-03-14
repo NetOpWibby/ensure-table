@@ -1,12 +1,12 @@
 
 
 
-//  I M P O R T S
+///  I M P O R T
 
 import print from "@webb/console";
 import { r } from "rethinkdb-ts";
 
-//  U T I L
+///  U T I L
 
 interface DatabaseInput {
   name: string;
@@ -29,9 +29,11 @@ interface DatabaseInput {
 
 
 
-//  E X P O R T
+///  E X P O R T
 
-export default async(database: DatabaseInput) => {
+export default ensureTable;
+
+export async function ensureTable(database: DatabaseInput) {
   let { index, name, options } = database;
 
   options = {
@@ -44,7 +46,7 @@ export default async(database: DatabaseInput) => {
     port: 28015,
     silent: true,
     user: "admin",
-    // User overrides
+    // supplied overrides
     ...options
   };
 
@@ -52,33 +54,19 @@ export default async(database: DatabaseInput) => {
 
   try {
     await ensureCheck();
-
-    console.log(
-      print.magentaLine(print.black(" rethinkdb ")) +
-      print.invert(" ready — ") +
-      print.invert(print.bold(name)) +
-      print.invert(" table ")
-    );
-  } catch(tableConnectionError) {
+    process.stdout.write("[rethinkdb] table ready: " + print.bold(name) + "\n");
+  } catch(_) {
     await r.tableCreate(name).run(databaseConnection);
     await ensureCheck();
-
-    console.log(
-      print.magentaLine(print.black(" rethinkdb ")) +
-      print.invert(" created — ") +
-      print.invert(print.bold(name)) +
-      print.invert(" table ")
-    );
-  }
-
-  finally {
+    process.stdout.write("[rethinkdb] table created: " + print.bold(name) + "\n");
+  } finally {
     databaseConnection.close();
   }
 
   async function ensureCheck() {
     if (index && Array.isArray(index)) {
-      /// If index is supplied and is an Array...
       try {
+        /// array index is supplied
         const indexPromises: Array<Promise<any>> = [];
 
         index.map(indexItem => indexPromises.push(
@@ -96,8 +84,8 @@ export default async(database: DatabaseInput) => {
         await Promise.all(indexPromises);
       }
     } else if (index) {
-      /// If a single index is supplied...
       try {
+        /// single index is supplied
         await r.table(name).indexWait(String(index)).run(databaseConnection);
       } catch(indexMightNotExist) {
         await r.table(name).indexCreate(String(index)).run(databaseConnection);
