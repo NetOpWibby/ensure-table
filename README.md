@@ -9,15 +9,16 @@
 
 ```sh
 # Install this module, with RethinkDB driver
-$ npm i @webb/ensure-table rethinkdb-ts
+npm i @webb/ensure-table rethinkdb-ts
 ```
 
 
 
 ## Usage
 
-```js
-import ensureTable from "@webb/ensure-table";
+```ts
+import { ensureTable } from "@webb/ensure-table";  // use the named export...
+import doesMyTableExist from "@webb/ensure-table"; // or, the default and name it whatever you want
 import server from "some-module";
 
 const databaseOptions = {
@@ -69,7 +70,7 @@ Type: `object` (optional)
 
 Available options:
 
-```js
+```ts
 // All values are defaults, aside from "db".
 // Internally, "db" will be the same value as "name" if not declared.
 {
@@ -91,14 +92,14 @@ Available options:
 
 ```sh
 # Run all tests, sequentially
-$ npm test
+npm test
 
 # Test dependencies for latest versions
-$ npm run test:dependencies
+npm run test:dependencies
 
 # Lint "src" directory
-$ npm run test:typescript
+npm run test:lint
 
 # Test this module
-$ npm run test:assert
+npm run test:lint-assert
 ```
